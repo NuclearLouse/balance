@@ -1,0 +1,70 @@
+<!--register_admin.html-->
+<!-- на обычном сайте тут нужен темплейт хидера а не меню-->
+{{ template "menu.html" .}}
+
+<body>
+    <div class="ui container">
+        <div class="ui top aligned left grid">
+
+            <div class="column">
+                <h2 class="ui header">
+                    Регистрация нового аккаунта
+                </h2>
+
+                <form class="ui large form" action="/admin/register" method="POST">
+                    <div class="field">
+                        <select class="ui fluid dropdown" required required minlength="4" name="role">
+                                    <option value="">тип аккаунта</option>
+                                    <option value="admin">администратор</option>
+                                    <option value="user">пользователь</option>
+                                </select>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" required pattern="[^ ]+" minlength="3" maxlength="30" name="username" placeholder="Логин">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" required pattern="[^ ]+" minlength="3" maxlength="30" name="password" placeholder="Пароль">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="passRepeat" placeholder="Повторите пароль">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="at icon"></i>
+                            <input type="email" name="email" placeholder="E-mail адрес">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="edit icon"></i>
+                            <input type="text" name="comment" placeholder="Комментарий">
+                        </div>
+                    </div>
+                    <button class="ui fluid large primary submit button">Зарегистрировать</button> {{ if .Error}}
+                    <div class="ui negative message">
+                        <div class="header">{{.ErrorTitle}}</div>
+                        <p>{{.ErrorMessage}}</p>
+                    </div>
+                    {{end}} {{ if .Success}}
+                    <div class="ui positive message">
+                        <div class="header">{{.SuccessTitle}}</div>
+                        <p>{{.SuccessMessage}}</p>
+                    </div>
+                    {{end}}
+                </form>
+                <!-- <div class="ui message">
+                    Вернуться? <a href="/u/journal/{{.user}}"> Журналы</a> <a href="/admin/all_users"> / Пользователи</a>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    {{ template "footer.html" .}}

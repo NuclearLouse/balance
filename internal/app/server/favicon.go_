@@ -1,0 +1,53 @@
+package server
+
+import (
+	"bytes"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+)
+
+func (s *server) handleFavicon(next http.Handler) http.Handler {
+
+	path := filepath.FromSlash("static/images/favicon.ico")
+	if len(path) > 0 && !os.IsPathSeparator(path[0]) {
+		wd, err := os.Getwd()
+		if err != nil {
+			panic(err)
+		}
+		path = filepath.Join(wd, path)
+	}
+
+	info, err := os.Stat(path)
+	if err != nil || info == nil || info.IsDir() {
+		panic("Invalid favicon path: " + path)
+	}
+
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+
+	reader := bytes.NewReader(file)
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI != "/favicon.ico" {
+			return
+		}
+		if r.Method != "GET" && r.Method != "HEAD" {
+			status := http.StatusOK
+			if r.Method != "OPTIONS" {
+				status = http.StatusMethodNotAllowed
+			}
+			w.Header().Set("Allow", "GET,HEAD,OPTIONS")
+			// c.AbortWithStatus(status)
+			w.WriteHeader(status)
+			next.ServeHTTP(w, r)
+			// return
+		}
+		w.Header().Set("Content-Type", "image/x-icon")
+		http.ServeContent(w, r, "favicon.ico", info.ModTime(), reader)
+		next.ServeHTTP(w, r)
+	})
+}

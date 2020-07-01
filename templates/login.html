@@ -1,0 +1,44 @@
+<!--login.html-->
+
+{{ template "header.html" .}}
+
+<body>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <h2 class="ui primary image header">
+                <!-- <img src="/static/images/logo.png" class="image"> -->
+                <div class="content">
+                    Вход в аккаунт
+                </div>
+            </h2>
+            <form class="ui large form" action="/" method="POST">
+                <div class="ui raised segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" required pattern="[^ ]+" minlength="3" maxlength="30" name="username" placeholder="Логин">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" required pattern="[^ ]+" minlength="3" maxlength="30" name="password" placeholder="Пароль">
+                        </div>
+                    </div>
+                    <button class="ui fluid large primary submit button">Вход</button>
+                </div>
+                {{ if .Error}}
+                <div class="ui negative message">
+                    <div class="header">{{.ErrorTitle}}</div>
+                    <p>{{.ErrorMessage}}</p>
+                    Забыли пароль? <a href="/register"> Восстановить</a>
+                </div>
+                {{end}}
+            </form>
+
+            <div class="ui message">
+                Первый раз? <a href="/register"> Регистрация</a>
+            </div>
+        </div>
+    </div>
+    {{ template "footer.html" .}}
