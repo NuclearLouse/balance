@@ -36,7 +36,7 @@ func (r *UserRepository) Create(ctx context.Context, u *models.User) error {
 		if err := u.PasswordHashing(); err != nil {
 			return err
 		}
-		u.IsAdmin = false
+		u.Admin = false
 		u.Status = true
 		u.CreatedAt = time.Now()
 		r.users[u.ID] = u

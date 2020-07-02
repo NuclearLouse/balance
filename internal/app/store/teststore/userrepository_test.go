@@ -25,6 +25,8 @@ func TestUserRepository_Create(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, u.Status)
 
+	err = s.UserRepository().Create(ctx, u)
+	assert.EqualError(t, err, "пользователь с таким логином существует")
 }
 
 func TestUserRepository_FindByEmail(t *testing.T) {

@@ -65,7 +65,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models
 		&u.Email,
 		&u.HashPassword,
 		&u.Username,
-		&u.IsAdmin,
+		&u.Admin,
 		&u.Status,
 		&u.CreatedAt,
 		&comment,

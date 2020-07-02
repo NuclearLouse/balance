@@ -11,7 +11,9 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,6 +43,7 @@ type server struct {
 	logger   *logrus.Logger
 	sesStore sessions.Store
 	tmpl     *template.Template
+	serv *http.Server
 }
 
 type responseWriter struct {
@@ -74,7 +77,8 @@ func Start() error {
 		return err
 	}
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	db, err := database.New(ctx, config.Database.URL)
 	if err != nil {
 		return err
@@ -93,10 +97,34 @@ func Start() error {
 	defer func() {
 		sessionStore.Options.MaxAge = -1
 	}()
-	srv := newServer(databaseStore, config, log, sessionStore)
-	bindAddr := config.Server.Host + ":" + config.Server.Port
-	srv.logger.Infoln("Start server at", bindAddr)
-	return http.ListenAndServe(bindAddr, srv)
+	srv := newServer(databaseStore, config, log, sessionStore) 
+	// bindAddr := config.Server.Host + ":" + config.Server.Port
+	// srv.serv.Addr = bindAddr
+	srv.serv.Handler = srv
+	srv.logger.Infoln("старт сервер:", srv.serv.Addr)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit,
+		os.Interrupt,
+		syscall.SIGHUP,
+		syscall.SIGQUIT,
+		syscall.SIGKILL)
+	go func() {
+		srv.logger.Infof("получен сигнал прерывания %v", <-quit)
+		if err := srv.serv.Close(); err != nil {
+			errors.Wrap(err, "сервер отключился с ошибкой")
+		}
+	}()
+	if err := srv.serv.ListenAndServe(); err != nil {
+		if err == http.ErrServerClosed {
+			srv.logger.Info("сервер отключается по запросу")
+		} else {
+			srv.logger.Errorln("внутренняя ошибка сервера:", err)
+		}
+	}
+	srv.logger.Info("сервер отключен")
+	return nil
+	// return http.ListenAndServe(bindAddr, srv)
 }
 
 func newServer(databaseStore store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
@@ -107,6 +135,9 @@ func newServer(databaseStore store.Store, cfg *config.Config, logger *logrus.Log
 		dbStore:  databaseStore,
 		sesStore: sessionStore,
 		tmpl:     template.Must(template.ParseGlob(pattern)),
+		serv: &http.Server{
+			Addr: cfg.Server.Host + ":" + cfg.Server.Port,
+		},
 	}
 	s.configureRouter()
 	return s
@@ -130,7 +161,7 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 			"remote_addr": r.RemoteAddr,
 			"request_id":  r.Context().Value(ctxKeyRequestID),
 		})
-		logger.Infof("started %s %s", r.Method, r.RequestURI)
+		logger.Infof("получен запрос %s %s", r.Method, r.RequestURI)
 
 		start := time.Now()
 
@@ -139,7 +170,7 @@ func (s *server) logRequest(next http.Handler) http.Handler {
 		next.ServeHTTP(rw, r)
 
 		logger.Infof(
-			"complited with CODE:[%d] %s in %v",
+			"запрос завершен [%d] %s за %v",
 			rw.code,
 			http.StatusText(rw.code),
 			time.Since(start),

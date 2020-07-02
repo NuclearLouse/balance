@@ -27,49 +27,54 @@ func (s *server) handleRegister() http.HandlerFunc {
 			"title": "Регистрация",
 		}
 		if r.Method == "GET" {
-			s.tmpl.ExecuteTemplate(w, "register.html", data)
+			switch r.Header.Get("Content-Type") {
+			case "application/json":
+				s.respond(w, r, http.StatusOK, data)
+			default:
+				s.tmpl.ExecuteTemplate(w, "register.html", data)
+			}
 			return
 		}
-		// TODO: тут нужен свич в зависимости от типа запроса html/text или html/json
-		// разные запросы должны отдавать разные переменные data		
-		switch r.Header.Get("Accept") {
+
+		switch r.Header.Get("Content-Type") {
 		case "application/json":
-			// Respond with JSON
-			// c.JSON(http.StatusOK, data)
+			u := &models.User{}
+			if err := json.NewDecoder(r.Body).Decode(u); err != nil {
+				s.error(w, r, http.StatusBadRequest, err)
+				return
+			}
+			if err := s.dbStore.UserRepository().Create(r.Context(), u); err != nil {
+				s.error(w, r, http.StatusUnprocessableEntity, err)
+				return
+			}
+			u.Sanitize()
+			u.Status = true
+			s.respond(w, r, http.StatusCreated, u)
+			return
 		case "application/xml":
 			// Respond with XML
-			// c.XML(http.StatusOK, data)
 		default:
-			// c.HTML(status, templateName, data)
-		}
+			u := &models.User{
+				Email:          r.PostFormValue("email"),
+				Password:       r.PostFormValue("password"),
+				RepeatPassword: r.PostFormValue("passRepeat"),
+				Username:       r.PostFormValue("username"),
+			}
+			if err := s.dbStore.UserRepository().Create(r.Context(), u); err != nil {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				data["Error"] = true
+				data["ErrorTitle"] = "Регистрация не прошла!"
+				data["ErrorMessage"] = err.Error()
+				s.tmpl.ExecuteTemplate(w, "register.html", data)
+			}
 
-		type request struct {
-			Email    string `json:"email"`
-			Password string `json:"password"`
+			message := fmt.Sprintf("Зарегистрирован новый пользователь %s", u.Email)
+			data["Success"] = true
+			data["SuccessTitle"] = "Пользователь успешно создан"
+			data["SuccessMessage"] = message
+			s.logger.Info(message)
+			w.WriteHeader(http.StatusCreated)
+			s.tmpl.ExecuteTemplate(w, "register.html", data)
 		}
-
-		req := &request{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
-			return
-		}
-
-		u := &models.User{
-			Email:    req.Email,
-			Password: req.Password,
-		}
-
-		if err := s.dbStore.UserRepository().Create(r.Context(), u); err != nil {
-			s.error(w, r, http.StatusUnprocessableEntity, err)
-			return
-		}
-
-		u.Sanitize() // ! нужна только при ответе json
-		s.respond(w, r, http.StatusCreated, u)
-		
-		data["Success"] = true
-		data["SuccessTitle"] = "Пользователь успешно создан"
-		data["SuccessMessage"] = fmt.Sprintf("Зарегистрирован новый пользователь %s", u.Email)
-		s.tmpl.ExecuteTemplate(w, "register.html", data)
 	}
 }

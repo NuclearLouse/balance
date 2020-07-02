@@ -13,10 +13,10 @@ type User struct {
 	ID             string    `json:"id"`
 	Email          string    `json:"email"`
 	Password       string    `json:"password,omitempty"`
-	RepeatPassword string    `json:"repeat_password"`
+	RepeatPassword string    `json:"repeat_password,omitempty"`
 	HashPassword   string    `json:"-"`
 	Username       string    `json:"username,omitempty"`
-	IsAdmin        bool      `json:"is_admin"`
+	Admin          bool      `json:"admin"`
 	Status         bool      `json:"status"`
 	CreatedAt      time.Time `json:"created_at"`
 	Comment        string    `json:"comment,omitempty"`
@@ -25,6 +25,7 @@ type User struct {
 // Sanitize ...
 func (u *User) Sanitize() {
 	u.Password = ""
+	u.RepeatPassword = ""
 }
 
 // Validate ... проверка введенных данных при логине
