@@ -27,7 +27,7 @@ func (s *server) handleRegister() http.HandlerFunc {
 			"title": "Регистрация",
 		}
 		if r.Method == "GET" {
-			s.tmpl.ExecuteTemplate(w, "register_user.html", data)
+			s.tmpl.ExecuteTemplate(w, "register.html", data)
 			return
 		}
 		// TODO: тут нужен свич в зависимости от типа запроса html/text или html/json
@@ -70,6 +70,6 @@ func (s *server) handleRegister() http.HandlerFunc {
 		data["Success"] = true
 		data["SuccessTitle"] = "Пользователь успешно создан"
 		data["SuccessMessage"] = fmt.Sprintf("Зарегистрирован новый пользователь %s", u.Email)
-		s.tmpl.ExecuteTemplate(w, "register_user.html", data)
+		s.tmpl.ExecuteTemplate(w, "register.html", data)
 	}
 }

@@ -1,0 +1,85 @@
+<!--menu.html-->
+{{ template "header.html" .}}
+
+<head>
+    <style>
+        body {
+            padding: 5em;
+        }
+        /* .ui.menu {
+            margin: 5em 0em;
+        } */
+        /* .ui.menu:last-child {
+            margin-bottom: 110px;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="ui top fixed menu">
+        <div class="header item">Расчёты</div>
+        <div class="ui simple dropdown item">
+            <i class="users icon"></i> Клиенты
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/u/suppliers/{{.user}}"><i class="download icon"></i>Поставщики</a>
+                <a class="item" href="/u/customers/{{.user}}"><i class="upload icon"></i>Покупатели</a>
+                <a class="item" href="/u/carriers/{{.user}}"><i class="shipping fast icon"></i>Перевозчики</a>
+                <div class="divider"></div>
+                <a class="item" href="/u/create_client/{{.user}}"><i class="user plus icon"></i>Создать клиента</a>
+            </div>
+        </div>
+        <div class="ui simple dropdown item">
+            <i class="warehouse icon"></i> Склады
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/u/stocks/{{.user}}"><i class="boxes icon"></i>Все склады</a>
+                <div class="divider"></div>
+                <a class="item" href="/u/create_stock/{{.user}}"><i class="box icon"></i>Создать склад</a>
+            </div>
+        </div>
+        <div class="ui simple dropdown item">
+            <i class="pencil alternate icon"></i> Документы
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/u/invoice_sales_form/{{.user}}">Расходная накладная</a>
+                <div class="divider"></div>
+                <a class="item" href="/u/invoice_purchase/{{.user}}">Приходная накладная</a>
+                <a class="item" href="/u/invoice_purchase_block/{{.user}}">Блок приходных накладных</a>
+                <div class="divider"></div>
+                <a class="item" href="/u/cash_issue/{{.user}}">Расходный кассовый</a>
+                <a class="item" href="/u/cash_receipt/{{.user}}">Приходный кассовый</a>
+                <div class="divider"></div>
+                <a class="item" href="/work_in_progress">Списание со склада</a>
+                <a class="item" href="/work_in_progress">Внутреннее перемещение</a>
+            </div>
+        </div>
+        <div class="ui simple dropdown item">
+            <i class="paste icon"></i> Журналы
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/u/journal/{{.user}}/?page=1">Журнал</a>
+                <a class="item" href="/u/offsets/{{.user}}?page=1">Расчеты</a>
+            </div>
+        </div>
+        <div class="ui simple dropdown item">
+            <i class="chart line icon"></i> Статистика
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <a class="item" href="/testing">По товарам</a>
+                <a class="item" href="/work_in_progress">По клиентам</a>
+                <a class="item" href="/work_in_progress">По складам</a>
+            </div>
+        </div>
+        {{ if .admin }}
+        <!--Display this link only when the user is admin-->
+        <a class="item" href="/admin/all_users"><i class="address book icon"></i>Пользователи</a> {{end}}
+        <a class="item" href="/u/receive_email/{{.user}}"><i class="at icon"></i>Получить</a>
+        <div class="right menu">
+            <div class="header item"><i class="user icon"></i>Работает {{.user}}</div>
+            <a class="item" href="/logout">
+                <i class="share square icon"></i> Выход
+            </a>
+        </div>
+    </div>
+</body>

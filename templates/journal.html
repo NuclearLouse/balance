@@ -1,0 +1,76 @@
+<!--journal.html-->
+{{ template "menu.html" . }}
+
+<body>
+    <div class="ui container">
+        <h3 class="ui header">Журнал документов</h3>
+        <form class="ui form" method="POST" action="/u/show_doc/{{.user}}">
+            {{ if .Error}}
+            <div class="ui negative message">
+                <div class="header">{{.ErrorTitle}}</div>
+                <p>{{.ErrorMessage}}</p>
+            </div>
+            {{end}}
+            <div class="grouped fields">
+                <table class="ui compact selectable celled definition table">
+                    <thead class="full-width">
+                        <tr>
+                            <th>№</th>
+                            <th>Тип документа</th>
+                            <th>Клиент</th>
+                            <th>Сумма</th>
+                            <th>Дата</th>
+                            <th>Состояние</th>
+                            <th>Комментарий</th>
+                            <!-- <th>Выбрать</th> -->
+                            <th>Подробно</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .documents}}
+                        <div class="field">
+                            <tr>
+                                <td>{{.NumberDoc}}</td>
+                                <td>{{.String}}</td>
+                                <td>{{.ClientFormat}}</td>
+                                <td>{{.Summ}}</td>
+                                <td>{{.CreatedFormat}}</td>
+                                <td>{{.State}}</td>
+                                <td>{{.Comment}}</td>
+
+                                <td class="collapsing center aligned">
+                                    <button class="ui green animated fade button" tabindex="0" type="submit" name="button" value={{.NumberDoc}}>
+                                                <div class="hidden content">ОК</div>
+                                                    <div class="visible content">
+                                                      <i class="eye icon"></i>
+                                                    </div>
+                                        </button>
+
+                                </td>
+                            </tr>
+                        </div>
+                        {{end}}
+                    </tbody>
+                    <tfoot class="full-width">
+                        <tr>
+                            <th colspan="8">
+                                <div class="ui pagination menu">
+                                    <a class="icon item">
+                                        <i class="left chevron icon"></i>
+                                    </a>
+                                    {{range .pages}} {{if eq .Page .PrevPage}}
+                                    <a class="active item" href="/u/journal/{{.UserName}}/?page={{.Page}}">{{.Page}}</a> {{else}}
+                                    <a class="item" href="/u/journal/{{.UserName}}/?page={{.Page}}">{{.Page}}</a>{{end}} {{end}}
+
+                                    <a class="icon item">
+                                        <i class="right chevron icon"></i>
+                                    </a>
+                                </div>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </form>
+    </div>
+    {{ template "footer.html" .}}
