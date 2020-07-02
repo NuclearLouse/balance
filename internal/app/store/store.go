@@ -13,4 +13,5 @@ type Store interface {
 // UserRepository ...
 type UserRepository interface {
 	Create(context.Context, *models.User) error
+	FindByEmail(context.Context, string) (*models.User, error)
 }

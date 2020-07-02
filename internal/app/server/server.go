@@ -17,7 +17,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/lithammer/shortuuid"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
@@ -37,11 +36,11 @@ var (
 type ctxKey int8
 
 type server struct {
-	store        store.Store
-	router       *mux.Router
-	logger       *logrus.Logger
-	sessionStore sessions.Store
-	tmpl         *template.Template
+	dbStore  store.Store
+	router   *mux.Router
+	logger   *logrus.Logger
+	sesStore sessions.Store
+	tmpl     *template.Template
 }
 
 type responseWriter struct {
@@ -82,25 +81,32 @@ func Start() error {
 	}
 	defer db.Close(ctx)
 
-	store := sqlstore.New(db)
+	databaseStore := sqlstore.New(db)
 
-	sessionKey := shortuuid.New()
+	sessionKey := uuid.New().String()
 	sessionStore := sessions.NewCookieStore([]byte(sessionKey))
-
-	srv := newServer(store, config, log, sessionStore)
+	sessionStore.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: true,
+	}
+	defer func() {
+		sessionStore.Options.MaxAge = -1
+	}()
+	srv := newServer(databaseStore, config, log, sessionStore)
 	bindAddr := config.Server.Host + ":" + config.Server.Port
 	srv.logger.Infoln("Start server at", bindAddr)
 	return http.ListenAndServe(bindAddr, srv)
 }
 
-func newServer(store store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
+func newServer(databaseStore store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
 	pattern := filepath.Join("templates", "*.html")
 	s := &server{
-		router:       mux.NewRouter(),
-		logger:       logger,
-		store:        store,
-		sessionStore: sessionStore,
-		tmpl:         template.Must(template.ParseGlob(pattern)),
+		router:   mux.NewRouter(),
+		logger:   logger,
+		dbStore:  databaseStore,
+		sesStore: sessionStore,
+		tmpl:     template.Must(template.ParseGlob(pattern)),
 	}
 	s.configureRouter()
 	return s

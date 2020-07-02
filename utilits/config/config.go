@@ -8,7 +8,6 @@ type Config struct {
 	} `ini:"server"`
 	Database struct {
 		URL  string `ini:"url"`
-		Test string `ini:"test"`
 	} `ini:"database"`
 	Logger struct {
 		Level     string `ini:"level"`

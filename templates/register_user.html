@@ -12,8 +12,8 @@
 
                 <div class="field">
                     <div class="ui left icon input">
-                        <i class="user icon"></i>
-                        <input type="text" required pattern="[^ ]+" minlength="3" maxlength="30" name="username" placeholder="Логин">
+                        <i class="at icon"></i>
+                        <input type="email" required name="email" placeholder="Логин(email)">
                     </div>
                 </div>
                 <div class="field">
@@ -30,14 +30,8 @@
                 </div>
                 <div class="field">
                     <div class="ui left icon input">
-                        <i class="at icon"></i>
-                        <input type="email" name="email" placeholder="E-mail адрес">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="ui left icon input">
-                        <i class="edit icon"></i>
-                        <input type="text" name="comment" placeholder="Комментарий">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" minlength="3" maxlength="30" placeholder="Видимое имя (по желанию)">
                     </div>
                 </div>
                 <button class="ui fluid large primary submit button">Зарегистрировать</button> {{ if .Error}}

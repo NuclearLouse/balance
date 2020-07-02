@@ -15,3 +15,8 @@ type UserRepository struct {
 func (r *UserRepository) Create(ctx context.Context, u *models.User) error {
 	return nil
 }
+
+// FindByEmail ...
+func (r *UserRepository) FindByEmail(context.Context, string) (*models.User, error) {
+	return nil, nil
+}
