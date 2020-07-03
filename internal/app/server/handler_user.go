@@ -43,6 +43,7 @@ func (s *server) handleRegister() http.HandlerFunc {
 				s.error(w, r, http.StatusBadRequest, err)
 				return
 			}
+			defer r.Body.Close()
 			if err := s.dbStore.UserRepository().Create(r.Context(), u); err != nil {
 				s.error(w, r, http.StatusUnprocessableEntity, err)
 				return
@@ -66,6 +67,7 @@ func (s *server) handleRegister() http.HandlerFunc {
 				data["ErrorTitle"] = "Регистрация не прошла!"
 				data["ErrorMessage"] = err.Error()
 				s.tmpl.ExecuteTemplate(w, "register.html", data)
+				return
 			}
 
 			message := fmt.Sprintf("Зарегистрирован новый пользователь %s", u.Email)

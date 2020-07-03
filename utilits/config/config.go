@@ -3,11 +3,11 @@ package config
 // Config ...
 type Config struct {
 	Server struct {
-		Host string `ini:"host"`
-		Port string `ini:"port"`
+		Host          string `ini:"host"`
+		Port          string `ini:"port"`
 	} `ini:"server"`
 	Database struct {
-		URL  string `ini:"url"`
+		URL string `ini:"url"`
 	} `ini:"database"`
 	Logger struct {
 		Level     string `ini:"level"`

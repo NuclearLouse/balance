@@ -43,7 +43,7 @@ type server struct {
 	logger   *logrus.Logger
 	sesStore sessions.Store
 	tmpl     *template.Template
-	serv *http.Server
+	serv     *http.Server
 }
 
 type responseWriter struct {
@@ -54,6 +54,11 @@ type responseWriter struct {
 func (w *responseWriter) WriteHeader(statusCode int) {
 	w.code = statusCode
 	w.ResponseWriter.WriteHeader(statusCode)
+}
+
+func templateFiles(path string) *template.Template {
+	pattern := filepath.Join(path, "*.html")
+	return template.Must(template.ParseGlob(pattern))
 }
 
 // Start ...
@@ -97,9 +102,8 @@ func Start() error {
 	defer func() {
 		sessionStore.Options.MaxAge = -1
 	}()
-	srv := newServer(databaseStore, config, log, sessionStore) 
-	// bindAddr := config.Server.Host + ":" + config.Server.Port
-	// srv.serv.Addr = bindAddr
+	srv := newServer(databaseStore, config, log, sessionStore)
+	srv.tmpl = templateFiles("templates")
 	srv.serv.Handler = srv
 	srv.logger.Infoln("старт сервер:", srv.serv.Addr)
 
@@ -128,13 +132,11 @@ func Start() error {
 }
 
 func newServer(databaseStore store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
-	pattern := filepath.Join("templates", "*.html")
 	s := &server{
 		router:   mux.NewRouter(),
 		logger:   logger,
 		dbStore:  databaseStore,
 		sesStore: sessionStore,
-		tmpl:     template.Must(template.ParseGlob(pattern)),
 		serv: &http.Server{
 			Addr: cfg.Server.Host + ":" + cfg.Server.Port,
 		},
