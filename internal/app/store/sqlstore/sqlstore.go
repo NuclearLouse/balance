@@ -8,7 +8,12 @@ import (
 // Store ...
 type Store struct {
 	db             *pgx.Conn
-	userRepository *UserRepository
+	repository *Repository
+}
+
+// Repository ...
+type Repository struct {
+	store *Store
 }
 
 // New ...
@@ -16,10 +21,10 @@ func New(db *pgx.Conn) *Store {
 	return &Store{db: db}
 }
 
-// UserRepository ...
-func (s *Store) UserRepository() store.UserRepository {
-    if s.userRepository == nil {
-        s.userRepository = &UserRepository{store: s}
-    }
-    return s.userRepository
+// Repository ...
+func (s *Store) Repository() store.Repository {
+	if s.repository == nil {
+		s.repository = &Repository{store: s}
+	}
+	return s.repository
 }

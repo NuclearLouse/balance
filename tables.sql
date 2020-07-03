@@ -1,23 +1,3 @@
-CREATE TABLE "users" (
-    "id" integer primary key autoincrement,
-    "uuid" varchar(36) UNIQUE,
-    "username" varchar(30),
-    "password" varchar(60),
-    "role" varchar(10),
-    "email" varchar(50) UNIQUE,
-    "status" boolean,
-    "created_at" datetime,
-    "comment" varchar(255)
-    );
------------------------------------------------------------------------------------------------------------
-CREATE TABLE "stocks" (
-    "id" integer primary key autoincrement,
-    "name" varchar(30),
-    "user_owner" varchar(36),
-    "status" boolean,
-    "created_at" datetime,
-    "comment" varchar(255)
-    );
 -----------------------------------------------------------------------------------------------------------
 CREATE TABLE "avail_stocks" (
     "name_stock" varchar(25),

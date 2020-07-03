@@ -16,4 +16,8 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/", s.handleLogin()).Methods("POST")
 	s.router.HandleFunc("/register", s.handleRegister()).Methods("GET")
 	s.router.HandleFunc("/register", s.handleRegister()).Methods("POST")
+
+	private := s.router.PathPrefix("/index").Subrouter()
+	private.Use(s.authenticateUser)
+	private.HandleFunc("/journal", s.handleJournal()).Methods("GET")
 }

@@ -10,3 +10,13 @@ CREATE TABLE users (
     CONSTRAINT pk_users PRIMARY KEY (id)
     );
 -----------------------------------------------------------------------------------------------------------
+CREATE TABLE stocks (
+    id serial,
+    owner varchar(36) REFERENCES users (id) ON DELETE CASCADE,
+    name varchar(100) NOT NULL,
+    status boolean NOT NULL DEFAULT true,
+    created_at timestamp NOT NULL DEFAULT now(),
+    comment text,
+    CONSTRAINT pk_stocks PRIMARY KEY (id)
+);
+-----------------------------------------------------------------------------------------------------------

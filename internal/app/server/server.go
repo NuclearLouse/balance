@@ -38,12 +38,12 @@ var (
 type ctxKey int8
 
 type server struct {
-	dbStore  store.Store
-	router   *mux.Router
-	logger   *logrus.Logger
-	sesStore sessions.Store
-	tmpl     *template.Template
-	serv     *http.Server
+	store        store.Store
+	router       *mux.Router
+	logger       *logrus.Logger
+	sessionStore sessions.Store
+	tmpl         *template.Template
+	serv         *http.Server
 }
 
 type responseWriter struct {
@@ -90,7 +90,7 @@ func Start() error {
 	}
 	defer db.Close(ctx)
 
-	databaseStore := sqlstore.New(db)
+	dbStore := sqlstore.New(db)
 
 	sessionKey := uuid.New().String()
 	sessionStore := sessions.NewCookieStore([]byte(sessionKey))
@@ -102,7 +102,7 @@ func Start() error {
 	defer func() {
 		sessionStore.Options.MaxAge = -1
 	}()
-	srv := newServer(databaseStore, config, log, sessionStore)
+	srv := newServer(dbStore, config, log, sessionStore)
 	srv.tmpl = templateFiles("templates")
 	srv.serv.Handler = srv
 	srv.logger.Infoln("старт сервер:", srv.serv.Addr)
@@ -131,12 +131,12 @@ func Start() error {
 	// return http.ListenAndServe(bindAddr, srv)
 }
 
-func newServer(databaseStore store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
+func newServer(store store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
 	s := &server{
-		router:   mux.NewRouter(),
-		logger:   logger,
-		dbStore:  databaseStore,
-		sesStore: sessionStore,
+		router:       mux.NewRouter(),
+		logger:       logger,
+		store:        store,
+		sessionStore: sessionStore,
 		serv: &http.Server{
 			Addr: cfg.Server.Host + ":" + cfg.Server.Port,
 		},

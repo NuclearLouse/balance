@@ -4,6 +4,7 @@ import (
 	"balance/internal/app/models"
 	"balance/internal/app/store"
 	"context"
+	"fmt"
 	"strings"
 
 	"errors"
@@ -13,26 +14,18 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-// UserRepository ...
-type UserRepository struct {
-	store *Store
-}
-
-// Create ...
-func (r *UserRepository) Create(ctx context.Context, u *models.User) error {
-	// Проверка на валидность всех данных
+// CreateUser ...
+func (r *Repository) CreateUser(ctx context.Context, u *models.User) error {
 	if err := u.Validate(); err != nil {
 		return errors.New("данные не действительны")
 	}
 	if u.Password != u.RepeatPassword {
 		return errors.New("пароли не идентичны")
 	}
-	// Проверка на существование такого email
-	if _, err := r.FindByEmail(ctx, u.Email); err != nil {
+	if _, err := r.FindUser(ctx, "email",u.Email); err != nil {
 		if err != store.ErrRecordNotFound {
 			return err
 		}
-		// если нет - то создать uuid, захэшировать пароль и создать юзера
 		if u.Username == "" {
 			u.Username = strings.Split(u.Email, "@")[0]
 		}
@@ -40,6 +33,7 @@ func (r *UserRepository) Create(ctx context.Context, u *models.User) error {
 		if err := u.PasswordHashing(); err != nil {
 			return err
 		}
+		
 		if _, err := r.store.db.Exec(ctx,
 			"INSERT INTO users VALUES ($1,$2,$3,$4);",
 			u.ID,
@@ -49,18 +43,27 @@ func (r *UserRepository) Create(ctx context.Context, u *models.User) error {
 		); err != nil {
 			return err
 		}
+		s := &models.Stock{
+			Name:    u.Username + "_основной",
+			Owner:   u.ID,
+			Comment: "основной склад",
+		}
+		if err := r.CreateStockDefault(ctx, s); err != nil {
+			return err
+		}
+		
 		return nil
 	}
 	return errors.New("пользователь с таким логином существует")
 }
 
-// FindByEmail ...
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+// FindUser ...
+func (r *Repository) FindUser(ctx context.Context, field, value string) (*models.User, error) {
 	u := &models.User{}
 	var comment pgtype.Varchar
-	if err := r.store.db.QueryRow(ctx,
-		"SELECT * FROM users WHERE email=$1;", email,
-	).Scan(
+	query := fmt.Sprintf("SELECT * FROM users WHERE %s=$1;", field)
+	if err := r.store.db.QueryRow(ctx, query, value).
+	Scan(
 		&u.ID,
 		&u.Email,
 		&u.HashPassword,
@@ -81,3 +84,4 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*models
 	}
 	return u, nil
 }
+

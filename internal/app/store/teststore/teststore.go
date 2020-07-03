@@ -7,7 +7,14 @@ import (
 
 // Store ...
 type Store struct {
-	userRepository *UserRepository
+	repository *Repository
+}
+
+// Repository ...
+type Repository struct {
+	store  *Store
+	users  map[string]*models.User
+	stocks map[int64]*models.Stock
 }
 
 // New  ...
@@ -15,13 +22,14 @@ func New() store.Store {
 	return &Store{}
 }
 
-// UserRepository ...
-func (s *Store) UserRepository() store.UserRepository {
-	if s.userRepository == nil {
-		s.userRepository = &UserRepository{
-			store: s,
-			users: make(map[string]*models.User),
+// Repository ...
+func (s *Store) Repository() store.Repository {
+	if s.repository == nil {
+		s.repository = &Repository{
+			store:  s,
+			users:  make(map[string]*models.User),
+			stocks: make(map[int64]*models.Stock),
 		}
 	}
-	return s.userRepository
+	return s.repository
 }

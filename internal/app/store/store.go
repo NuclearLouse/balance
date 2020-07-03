@@ -7,11 +7,13 @@ import (
 
 // Store ...
 type Store interface {
-	UserRepository() UserRepository
+	Repository() Repository
 }
 
-// UserRepository ...
-type UserRepository interface {
-	Create(context.Context, *models.User) error
-	FindByEmail(context.Context, string) (*models.User, error)
+// Repository ...
+type Repository interface {
+	CreateUser(context.Context, *models.User) error
+	FindUser(context.Context, string, string) (*models.User, error)
+	CreateStockDefault(context.Context, *models.Stock) error
+	CreateStockTemp(context.Context, *models.Stock) error
 }
