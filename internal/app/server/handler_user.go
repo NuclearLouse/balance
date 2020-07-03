@@ -39,6 +39,9 @@ func (s *server) handleLogin() http.HandlerFunc {
 			}
 
 		}
+		data = map[string]interface{}{
+			"title": "Журнал-главная",
+		}
 		if r.Header.Get("Content-Type") == "application/json" {
 			s.respond(w, r, http.StatusOK, data)
 			return
@@ -167,4 +170,22 @@ func (s *server) sessionsCreate(w http.ResponseWriter, r *http.Request) (int, er
 	}
 
 	return http.StatusOK, nil
+}
+
+func (s *server) handleLogout() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := s.sessionStore.Get(r, sessionName)
+		session.Options.MaxAge = -1
+		session.Save(r, w)
+		data := map[string]interface{}{
+			"title": "Вход",
+		}
+		switch r.Header.Get("Content-Type") {
+		case "application/json":
+			s.respond(w, r, http.StatusOK, data)
+			return
+		default:
+			s.tmpl.ExecuteTemplate(w, "login.html", data)
+		}
+	}
 }
