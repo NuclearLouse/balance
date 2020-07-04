@@ -22,7 +22,6 @@ CREATE TABLE stocks (
 -----------------------------------------------------------------------------------------------------------
 CREATE TABLE client_type (
     type integer,
-    short_name varchar(5) NOT NULL,
     description varchar(50) NOT NULL,
     CONSTRAINT pk_client_type PRIMARY KEY (type)
 );
@@ -41,7 +40,7 @@ CREATE TABLE clients (
 -----------------------------------------------------------------------------------------------------------
 CREATE TABLE document_type (
     type integer,
-    short_name varchar(5) NOT NULL,
+    short_name varchar(5) NOT NULL UNIQUE,
     description varchar(50) NOT NULL,
     CONSTRAINT pk_document_type PRIMARY KEY (type)
 );
@@ -82,4 +81,15 @@ CREATE TABLE products_in_documents(
     quantity integer,
     price NUMERIC(8,2)
 );
+-----------------------------------------------------------------------------------------------------------
+INSERT INTO client_type VALUES (1, 'поставщик');
+INSERT INTO client_type VALUES (2, 'покупатель');
+INSERT INTO client_type VALUES (3, 'перевозчик');
+-----------------------------------------------------------------------------------------------------------
+INSERT INTO document_type VALUES (1, 'NR', 'Расходная накладная');
+INSERT INTO document_type VALUES (2, 'NP', 'Приходная накладная');
+INSERT INTO document_type VALUES (3, 'OR', 'Расходный ордер');
+INSERT INTO document_type VALUES (4, 'OP', 'Приходный ордер');
+INSERT INTO document_type VALUES (5, 'VP', 'Внутреннее перемещение');
+INSERT INTO document_type VALUES (6, 'SS', 'Списание со склада');
 -----------------------------------------------------------------------------------------------------------
