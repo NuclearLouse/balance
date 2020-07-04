@@ -46,7 +46,8 @@ func (s *server) handleLogin() http.HandlerFunc {
 			s.respond(w, r, http.StatusOK, data)
 			return
 		}
-
+		//TODO: Тут нужны все данные для страницы Журнал-главная
+		// .user .documents .pages
 		s.tmpl.ExecuteTemplate(w, "journal.html", data)
 	}
 }
