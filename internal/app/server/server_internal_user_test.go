@@ -1,10 +1,6 @@
 package server
 
 import (
-	// "balance/internal/app/models"
-	"balance/internal/app/store/teststore"
-	"balance/utilits/config"
-	"balance/utilits/logger"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -12,19 +8,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestServer_HandleRegisterJSON(t *testing.T) {
-	cfg := config.New()
-	log, _ := logger.New(cfg)
-	s := newServer(
-		teststore.New(),
-		cfg,
-		log,
-		sessions.NewCookieStore([]byte("secret")),
-	)
+
+	s := testServer(t)
+
 	testCases := []struct {
 		name         string
 		payload      interface{}
@@ -76,15 +66,9 @@ func TestServer_HandleRegisterJSON(t *testing.T) {
 }
 
 func TestServer_HandleRegisterHTTP(t *testing.T) {
-	cfg := config.New()
-	log, _ := logger.New(cfg)
-	s := newServer(
-		teststore.New(),
-		cfg,
-		log,
-		sessions.NewCookieStore([]byte("secret")),
-	)
-	s.tmpl = templateFiles("C:\\Users\\android\\go\\balance\\templates")
+
+	s := testServer(t)
+
 	testCases := []struct {
 		name         string
 		urlformvalue string

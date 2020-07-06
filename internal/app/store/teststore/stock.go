@@ -3,7 +3,7 @@ package teststore
 import (
 	"balance/internal/app/models"
 	"context"
-	"errors"
+	"github.com/pkg/errors"
 )
 
 // CreateStockDefault ...

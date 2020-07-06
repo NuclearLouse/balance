@@ -16,4 +16,5 @@ type Repository interface {
 	FindUser(context.Context, string, string) (*models.User, error)
 	CreateStockDefault(context.Context, *models.Stock) error
 	CreateStockTemp(context.Context, *models.Stock) error
+	CreateClient(context.Context, models.Client) error
 }

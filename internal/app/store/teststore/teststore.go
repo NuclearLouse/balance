@@ -15,6 +15,7 @@ type Repository struct {
 	store  *Store
 	users  map[string]*models.User
 	stocks map[int64]*models.Stock
+	clients map[int]models.Client
 }
 
 // New  ...
@@ -29,6 +30,7 @@ func (s *Store) Repository() store.Repository {
 			store:  s,
 			users:  make(map[string]*models.User),
 			stocks: make(map[int64]*models.Stock),
+			clients: make(map[int]models.Client),
 		}
 	}
 	return s.repository

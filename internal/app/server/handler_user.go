@@ -54,9 +54,7 @@ func (s *server) handleLogin() http.HandlerFunc {
 			}
 
 			session.Values["user_id"] = u.ID
-			session.Values["user_name"] = u.Username
-			session.Values["admin"] = u.Admin
-			session.Values["prevPage"] = 1
+
 			if err := s.sessionStore.Save(r, w, session); err != nil {
 				return http.StatusInternalServerError, err
 			}
@@ -91,7 +89,6 @@ func (s *server) handleLogin() http.HandlerFunc {
 		}
 		//TODO: Тут нужны все данные для страницы Журнал-главная
 		// .user .documents .pages
-		s.logger.Debug(r.Context().Value(ctxKeyUser))
 		s.tmpl.ExecuteTemplate(w, "journal.html", data)
 	}
 }
@@ -180,6 +177,7 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 				return
 			}
 		}
+
 		code := http.StatusUnauthorized
 		id, ok := session.Values["user_id"]
 		if !ok {
@@ -208,15 +206,21 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 				return
 			}
 		}
-
+		//! В контекст можно записывать разную информацию, например пагинацию
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, u)))
 	})
 }
 
 func (s *server) handleLogout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO: сделать обработку ошибок
 		session, _ := s.sessionStore.Get(r, sessionName)
+
+		session.Values["user_id"] = ""
+		// session.Values["user_name"] = ""
+		// session.Values["admin"] = false
 		session.Options.MaxAge = -1
+
 		session.Save(r, w)
 		data := map[string]interface{}{
 			"action": "выполнен выход",
@@ -231,3 +235,4 @@ func (s *server) handleLogout() http.HandlerFunc {
 		}
 	}
 }
+

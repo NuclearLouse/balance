@@ -1,0 +1,56 @@
+<!--create_client.html-->
+{{ template "menu.html" . }}
+
+<body>
+    <div class="ui container">
+        <div class="ui top aligned left grid">
+            <div class="column">
+                <h2 class="ui header">
+                    Создание нового клиента
+                </h2>
+
+                <form class="ui large form" action="/u/create_client" method="POST">
+
+                    <div class="field">
+                        <label>Тип клиента</label>
+                        <select class="ui fluid dropdown" name="type">
+                                        <option value="">Выбрать тип</option>
+                                        <option value="1">Поставщик</option>
+                                        <option value="2">Покупатель</option>
+                                        <option value="3">Перевозчик</option>
+                                    </select>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" required minlength="3" maxlength="30" name="name" placeholder="Имя клиента">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="percent icon"></i>
+                            <input type="text" name="markup" placeholder="Базовая наценка">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="edit icon"></i>
+                            <input type="text" name="comment" placeholder="Комментарий">
+                        </div>
+                    </div>
+                    <button class="ui fluid large primary submit button">Создать</button> {{ if .Error}}
+                    <div class="ui negative message">
+                        <div class="header">{{.ErrorTitle}}</div>
+                        <p>{{.ErrorMessage}}</p>
+                    </div>
+                    {{end}} {{ if .Success}}
+                    <div class="ui positive message">
+                        <div class="header">{{.SuccessTitle}}</div>
+                        <p>{{.SuccessMessage}}</p>
+                    </div>
+                    {{end}}
+                </form>
+            </div>
+        </div>
+    </div>
+    {{ template "footer.html" .}}

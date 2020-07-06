@@ -29,12 +29,12 @@ func TestRepository_FindUserByEmail(t *testing.T) {
 	s := sqlstore.New(db)
 
 	email := "fail@mail.org"
-	_, err := s.Repository().FindUser(ctx,"email", email)
+	_, err := s.Repository().FindUser(ctx, "email", email)
 	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
 
 	u := models.TestUser(t)
 	s.Repository().CreateUser(ctx, u)
-	tu, err := s.Repository().FindUser(ctx,"email", u.Email)
+	tu, err := s.Repository().FindUser(ctx, "email", u.Email)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tu.Status)
 }
@@ -52,4 +52,19 @@ func TestRepository_CreateStockDefault(t *testing.T) {
 	stock.Owner = u.ID
 	assert.NoError(t, s.Repository().CreateStockDefault(ctx, stock))
 
+}
+
+func TestRepository_CreateClient(t *testing.T) {
+	ctx := context.Background()
+	db, teardown := sqlstore.TestDB(ctx, t, testDB)
+	defer teardown("clients", "users")
+
+	s := sqlstore.New(db)
+
+	u := models.TestUser(t)
+	u.ID = "b626d490-74d3-444d-9bac-6c1b1b950f79"
+	s.Repository().CreateUser(ctx, u)
+	c := models.TestClient(t)
+	c.User = u.ID
+	assert.NoError(t, s.Repository().CreateClient(ctx, c))
 }

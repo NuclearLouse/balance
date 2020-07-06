@@ -4,11 +4,11 @@ import (
 	"balance/internal/app/models"
 	"balance/internal/app/store"
 	"context"
-	"errors"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 // CreateUser ...
@@ -31,19 +31,19 @@ func (r *Repository) CreateUser(ctx context.Context, u *models.User) error {
 			return err
 		}
 		//TODO: тут надо создать склад по дефолту
-		
+
 		u.Admin = false
 		u.Status = true
 		u.CreatedAt = time.Now()
 		r.users[u.ID] = u
 
 		s := &models.Stock{
-			ID: time.Now().Unix(),
-			Owner: u.ID,
-			Name: u.Username+"_основной",
+			ID:        time.Now().Unix(),
+			Owner:     u.ID,
+			Name:      u.Username + "_основной",
 			CreatedAt: time.Now(),
-			Comment: "основной склад",
-			Status: true,
+			Comment:   "основной склад",
+			Status:    true,
 		}
 		if err := r.CreateStockDefault(ctx, s); err != nil {
 			return err

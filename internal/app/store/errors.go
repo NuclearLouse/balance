@@ -1,6 +1,6 @@
 package store
 
-import "errors"
+import "github.com/pkg/errors"
 
 var (
 	// ErrRecordNotFound ...

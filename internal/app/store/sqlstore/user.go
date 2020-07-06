@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strings"
 
-	"errors"
+	"github.com/pkg/errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgtype"
@@ -61,7 +61,7 @@ func (r *Repository) CreateUser(ctx context.Context, u *models.User) error {
 func (r *Repository) FindUser(ctx context.Context, field, value string) (*models.User, error) {
 	u := &models.User{}
 	var comment pgtype.Varchar
-	query := fmt.Sprintf("SELECT * FROM users WHERE %s=$1;", field)
+	query := fmt.Sprintf("SELECT * FROM users WHERE status=true AND %s=$1;", field)
 	if err := r.store.db.QueryRow(ctx, query, value).
 	Scan(
 		&u.ID,

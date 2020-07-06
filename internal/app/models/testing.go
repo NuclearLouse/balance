@@ -21,3 +21,14 @@ func TestStock(t *testing.T) *Stock {
 		Comment: "основной склад",
 	}
 }
+
+// TestClient ...
+func TestClient(t *testing.T) Client {
+	return Client{
+		Name: "тестовый",
+		Type: 1,
+		Markup: 1.45,
+		Status: true,
+		Comment: "тестовый клиент",
+	}
+}
