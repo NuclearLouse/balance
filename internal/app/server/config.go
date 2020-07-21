@@ -1,4 +1,4 @@
-package config
+package server
 
 // Config ...
 type Config struct {
@@ -11,7 +11,6 @@ type Config struct {
 	} `ini:"database"`
 	Logger struct {
 		Level     string `ini:"level"`
-		ShortLvl  bool   `ini:"short_lvl"`
 		MaxSize   int    `ini:"max_size"`
 		MaxAge    int    `ini:"max_age"`
 		MaxBackup int    `ini:"max_backup"`
@@ -21,8 +20,8 @@ type Config struct {
 	} `ini:"logger"`
 }
 
-// New ...
-func New() *Config {
+// NewConfig ...
+func NewConfig() *Config {
 	//TODO: make default config parameters
 	return &Config{}
 }

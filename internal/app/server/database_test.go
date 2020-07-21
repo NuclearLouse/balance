@@ -1,4 +1,4 @@
-package database
+package server
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDatabase_New(t *testing.T) {
+func TestDatabase_NewDB(t *testing.T) {
 	if err := godotenv.Load("C:\\Users\\android\\go\\balance\\.env");err != nil {
 		t.Fatal(err)
 	}
 	ctx := context.Background()
-	conn, err := New(ctx, os.Getenv("DB_TEST"))
+	conn, err := NewDB(ctx, os.Getenv("DB_TEST"))
 	if err != nil {
 		t.Fatal(err)
 	}

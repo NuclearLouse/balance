@@ -11,8 +11,6 @@ import (
 
 func TestServer_HandleCreateClientHTTP(t *testing.T) {
 
-	s := testServer(t)
-
 	testCases := []struct {
 		name         string
 		urlformvalue string
@@ -30,6 +28,8 @@ func TestServer_HandleCreateClientHTTP(t *testing.T) {
 		},
 	}
 
+	s := testServer(t)
+	
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			b := strings.NewReader(tc.urlformvalue)

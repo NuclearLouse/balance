@@ -3,9 +3,6 @@ package server
 import (
 	"balance/internal/app/store"
 	"balance/internal/app/store/sqlstore"
-	"balance/utilits/config"
-	"balance/utilits/database"
-	"balance/utilits/logger"
 	"context"
 	"encoding/json"
 	"html/template"
@@ -16,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/NuclearLouse/logging"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -40,7 +38,7 @@ type ctxKey int8
 type server struct {
 	store        store.Store
 	router       *mux.Router
-	logger       *logrus.Logger
+	logger       logrus.FieldLogger
 	sessionStore sessions.Store
 	tmpl         *template.Template
 	serv         *http.Server
@@ -72,19 +70,22 @@ func Start() error {
 	if err != nil {
 		return err
 	}
-	config := config.New()
+	config := NewConfig()
 	if err := cfg.MapTo(config); err != nil {
 		return err
 	}
 
-	log, err := logger.New(config)
+	logCfg := logging.NewConfig()
+	logCfg.LogFile = config.Logger.LogFile
+	logCfg.Level = config.Logger.Level
+	log, err := logging.New(logCfg)
 	if err != nil {
 		return err
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	db, err := database.New(ctx, config.Database.URL)
+	db, err := NewDB(ctx, config.Database.URL)
 	if err != nil {
 		return err
 	}
@@ -131,7 +132,7 @@ func Start() error {
 	// return http.ListenAndServe(bindAddr, srv)
 }
 
-func newServer(store store.Store, cfg *config.Config, logger *logrus.Logger, sessionStore sessions.Store) *server {
+func newServer(store store.Store, cfg *Config, logger logrus.FieldLogger, sessionStore sessions.Store) *server {
 	s := &server{
 		router:       mux.NewRouter(),
 		logger:       logger,

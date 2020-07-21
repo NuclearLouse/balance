@@ -2,17 +2,17 @@ package server
 
 import (
 	"balance/internal/app/store/teststore"
-	"balance/utilits/config"
-	"balance/utilits/logger"
 	"testing"
 
+	"github.com/NuclearLouse/logging"
 	"github.com/gorilla/sessions"
 )
 
 func testServer(t *testing.T) *server {
-	cfg := config.New()
-	log, _ := logger.New(cfg)
-
+	cfg := NewConfig()
+	cfgLog := logging.NewConfig()
+	cfgLog.Level = "error"
+	log, _ := logging.New(cfgLog)
 	s := newServer(
 		teststore.New(),
 		cfg,

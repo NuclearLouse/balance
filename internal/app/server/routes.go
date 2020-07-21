@@ -13,6 +13,7 @@ func (s *server) configureRouter() {
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logRequest)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+	
 	s.router.HandleFunc("/", s.handleLogin()).Methods("GET","POST")
 	s.router.HandleFunc("/logout", s.handleLogout()).Methods("GET")
 	s.router.HandleFunc("/register", s.handleRegister()).Methods("GET","POST")

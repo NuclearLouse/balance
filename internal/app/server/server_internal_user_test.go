@@ -13,8 +13,6 @@ import (
 
 func TestServer_HandleRegisterJSON(t *testing.T) {
 
-	s := testServer(t)
-
 	testCases := []struct {
 		name         string
 		payload      interface{}
@@ -52,6 +50,8 @@ func TestServer_HandleRegisterJSON(t *testing.T) {
 		},
 	}
 
+	s := testServer(t)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			b := &bytes.Buffer{}
@@ -66,8 +66,6 @@ func TestServer_HandleRegisterJSON(t *testing.T) {
 }
 
 func TestServer_HandleRegisterHTTP(t *testing.T) {
-
-	s := testServer(t)
 
 	testCases := []struct {
 		name         string
@@ -86,6 +84,8 @@ func TestServer_HandleRegisterHTTP(t *testing.T) {
 		},
 	}
 
+	s := testServer(t)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			b := strings.NewReader(tc.urlformvalue)
@@ -96,4 +96,8 @@ func TestServer_HandleRegisterHTTP(t *testing.T) {
 			assert.Equal(t, tc.expectedCode, rec.Code)
 		})
 	}
+}
+
+func TestServer_HandleLoginHTTP(t *testing.T) {
+	
 }
